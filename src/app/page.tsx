@@ -11,7 +11,7 @@ import WhatToAsk from "@/components/landing/WhatToAsk";
 
 export default function Home() {
   return (
-    <section className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       <Header />
       <Hero />
       <HowItWorks />
@@ -19,6 +19,6 @@ export default function Home() {
       <PricingSection />
       <CTA />
       <Footer />
-    </section>
+    </main>
   );
 }
