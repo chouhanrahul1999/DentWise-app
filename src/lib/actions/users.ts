@@ -20,7 +20,7 @@ export async function syncUser() {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.emailAddresses[0].emailAddress,
-        phone: user.phoneNumbers[0].phoneNumber,
+        phone: user.phoneNumbers?.[0]?.phoneNumber || null,
       },
     });
 
