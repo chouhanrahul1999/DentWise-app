@@ -1,4 +1,5 @@
 "use client";
+import AdminStats from "@/components/admin/AdminStats";
 import Navbar from "@/components/Navbar";
 import { useGetAppointments } from "@/hooks/use-appointments";
 import { useGetDoctors } from "@/hooks/use-doctors";
@@ -8,9 +9,19 @@ import { SettingsIcon } from "lucide-react";
 const AdminDashboardClient = () => {
   const { user } = useUser();
   const { data: doctors = [], isLoading: doctorsLoading } = useGetDoctors();
-  const { data: appointments = [], isLoading: appointmentsLoading } = useGetAppointments();
+  const { data: appointments = [], isLoading: appointmentsLoading } =
+    useGetAppointments();
 
-  console.log(doctors, appointments);
+  const stats = {
+    totalDoctors: doctors.length,
+    activeDoctors: doctors.filter((doc) => doc.isActive).length,
+    totalAppointments: appointments.length,
+    completedAppointments: appointments.filter(
+      (appt) => appt.status === "COMPLETED",
+    ).length,
+  };
+
+  if (doctorsLoading || appointmentsLoading) return <p>Loading...</p>;
 
   return (
     <div className="min-h-screen bg-background">
@@ -44,6 +55,13 @@ const AdminDashboardClient = () => {
             </div>
           </div>
         </div>
+
+        <AdminStats
+          totalDoctors={stats.totalDoctors}
+          activeDoctors={stats.activeDoctors}
+          totalAppointments={stats.totalAppointments}
+          completedAppointments={stats.completedAppointments}
+        />
       </div>
     </div>
   );
