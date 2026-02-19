@@ -7,14 +7,21 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { MailIcon, PhoneIcon, PlusIcon, StethoscopeIcon } from "lucide-react";
+import {
+  EditIcon,
+  MailIcon,
+  PhoneIcon,
+  PlusIcon,
+  StethoscopeIcon,
+} from "lucide-react";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import { Badge } from "../ui/badge";
+import AddDoctorDialog from "./AddDoctorDialog";
 
 const DoctorsManagement = () => {
   const { data: doctors = [] } = useGetDoctors();
-  const [isAddDialogOpen, setIsDialogOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
 
   const handleEditDoctor = () => {};
@@ -101,12 +108,27 @@ const DoctorsManagement = () => {
                   ) : (
                     <Badge variant="secondary">Inactive</Badge>
                   )}
+
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-8 px-3"
+                    onClick={() => handleEditDoctor()}
+                  >
+                    <EditIcon className="size-4 mr-1" />
+                    Edit
+                  </Button>
                 </div>
               </div>
             ))}
           </div>
         </CardContent>
       </Card>
+
+      <AddDoctorDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+      />
     </>
   );
 };
