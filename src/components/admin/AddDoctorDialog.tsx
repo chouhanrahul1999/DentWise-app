@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Button } from "../ui/button";
+import { formatPhoneNumber } from "@/lib/utils";
 
 interface AddDoctorDilogProps {
   isOpen: boolean;
@@ -37,9 +38,14 @@ const AddDoctorDialog = ({ isOpen, onClose }: AddDoctorDilogProps) => {
 
   const createDoctorMutaion = useCreateDoctor();
 
-  const handlePhoneChange = (value: string) => {};
+  const handlePhoneChange = (value: string) => {
+    const formattedPhoneNumber = formatPhoneNumber(value);
+    setNewDoctor({ ...newDoctor, phone: formattedPhoneNumber });
+  };
 
-  const handleSave = () => {};
+  const handleSave = () => {
+    createDoctorMutaion.mutate({ ...newDoctor }, { onSuccess: handleClose });
+  };
 
   const handleClose = () => {
     onClose();
