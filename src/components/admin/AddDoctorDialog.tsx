@@ -1,9 +1,21 @@
-import React from 'react'
+import { Gender } from "@prisma/client";
+import { useState } from "react";
 
-const AddDoctorDialog = () => {
-  return (
-    <div>AddDoctorDialog</div>
-  )
+interface AddDoctorDilogProps {
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export default AddDoctorDialog
+const AddDoctorDialog = ({ isOpen, onClose }: AddDoctorDilogProps) => {
+    const [newDoctor, setNewDoctor] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    speciality: "",
+    gender: "MALE" as Gender,
+    isActive: true,
+  });
+  return <div>AddDoctorDialog</div>;
+};
+
+export default AddDoctorDialog;
