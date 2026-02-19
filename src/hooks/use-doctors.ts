@@ -1,6 +1,6 @@
 "use client";
 
-import getDoctors, { createDoctor } from "@/lib/actions/doctors";
+import getDoctors, { createDoctor, updateDoctor } from "@/lib/actions/doctors";
 import {
   QueryClient,
   useMutation,
@@ -29,3 +29,18 @@ export const useCreateDoctor = () => {
 
   return result;
 };
+
+export const useUpdateDoctor = () => {
+  const queryClien = useQueryClient();
+
+  const result = useMutation({
+    mutationFn: updateDoctor,
+    onSuccess: () => {
+      queryClien.invalidateQueries({ queryKey: ["getDoctors"] });
+    },
+    onError: (error) => console.error("Error update doctor:", error),
+  });
+
+  return result;
+};
+
