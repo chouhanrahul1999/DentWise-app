@@ -1,6 +1,7 @@
 "use client";
 import AdminStats from "@/components/admin/AdminStats";
 import DoctorsManagement from "@/components/admin/DoctorsManagement";
+import LoadingUi from "@/components/LoadingUi";
 import Navbar from "@/components/Navbar";
 import { useGetAppointments } from "@/hooks/use-appointments";
 import { useGetDoctors } from "@/hooks/use-doctors";
@@ -22,7 +23,7 @@ const AdminDashboardClient = () => {
     ).length,
   };
 
-  if (doctorsLoading || appointmentsLoading) return <p>Loading...</p>;
+  if (doctorsLoading || appointmentsLoading) return <LoadingUi />;
 
   return (
     <div className="min-h-screen bg-background">
