@@ -1,4 +1,5 @@
 import Navbar from "@/components/Navbar";
+import { PricingTable } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs/server";
 import { CrownIcon } from "lucide-react";
 import { redirect } from "next/navigation";
@@ -40,6 +41,18 @@ const ProPage = async () => {
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="space-y-8">
+          <div className="text-center space-y-4">
+            <h2 className="text-3xl font-bold">Choose Your Plan</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Select the perfect plan for your dental care needs. All plans
+              include secure access and bank-level encryption.
+            </p>
+          </div>
+
+          <PricingTable />
         </div>
       </div>
     </>
