@@ -94,7 +94,20 @@ const VapiWidget = () => {
     }
   };
 
-  return <div>VapiWidget</div>;
+  return (
+    <div className="max-w-5xl mx-auto px-4 flex flex-col overflow-hidden pb-20">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold font-mono">
+          <span>Talk to Your </span>
+          <span className="text-primary uppercase">AI Dental Assistant</span>
+        </h1>
+        <p className="text-muted-foreground mt-2">
+          Have a voice conversation with our AI assistant for dental advice and
+          guidance
+        </p>
+      </div>
+    </div>
+  );
 };
 
 export default VapiWidget;
