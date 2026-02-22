@@ -1,11 +1,14 @@
 "use client";
-import { vapi } from "@/lib/actions/vapi";
+
 import { useUser } from "@clerk/nextjs";
 import { useEffect, useRef, useState } from "react";
 import { Card } from "../ui/card";
 import Image from "next/image";
+import { Button } from "../ui/button";
+import { vapi } from "@/lib/actions/vapi";
 
-const VapiWidget = () => {
+
+function VapiWidget() {
   const [callActive, setCallActive] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -15,6 +18,7 @@ const VapiWidget = () => {
   const { user, isLoaded } = useUser();
   const messageContainerRef = useRef<HTMLDivElement>(null);
 
+  // auto-scroll for messages
   useEffect(() => {
     if (messageContainerRef.current) {
       messageContainerRef.current.scrollTop =
@@ -22,6 +26,7 @@ const VapiWidget = () => {
     }
   }, [messages]);
 
+  // setup event listeners for VAPI
   useEffect(() => {
     const handleCallStart = () => {
       console.log("Call started");
@@ -81,23 +86,27 @@ const VapiWidget = () => {
     };
   }, []);
 
-  if (!isLoaded) return null;
-
   const toggleCall = async () => {
-    try {
-      setConnecting(true);
-      setMessages([]);
-      setCallEnded(false);
+    if (callActive) vapi.stop();
+    else {
+      try {
+        setConnecting(true);
+        setMessages([]);
+        setCallEnded(false);
 
-      await vapi.start(process.env.NEXT_PUBLIC_VAPI_API_KEY);
-    } catch (error) {
-      console.log("Failed to start call", error);
-      setConnecting(false);
+        await vapi.start(process.env.NEXT_PUBLIC_VAPI_ASSISTENT_ID);
+      } catch (error) {
+        console.log("Failed to start call", error);
+        setConnecting(false);
+      }
     }
   };
 
+  if (!isLoaded) return null;
+
   return (
     <div className="max-w-5xl mx-auto px-4 flex flex-col overflow-hidden pb-20">
+      {/* TITLE */}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold font-mono">
           <span>Talk to Your </span>
@@ -109,9 +118,14 @@ const VapiWidget = () => {
         </p>
       </div>
 
+      {/* VIDEO CALL AREA */}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        {/* AI ASSISTANT CARD */}
+
         <Card className="bg-card/90 backdrop-blur-sm border border-border overflow-hidden relative">
           <div className="aspect-video flex flex-col items-center justify-center p-6 relative">
+            {/* AI VOICE ANIMATION */}
             <div
               className={`absolute inset-0 ${
                 isSpeaking ? "opacity-30" : "opacity-0"
@@ -134,6 +148,7 @@ const VapiWidget = () => {
               </div>
             </div>
 
+            {/* AI LOGO */}
             <div className="relative size-32 mb-4">
               <div
                 className={`absolute inset-0 bg-primary opacity-10 rounded-full blur-lg ${
@@ -158,6 +173,7 @@ const VapiWidget = () => {
               Dental Assistant
             </p>
 
+            {/* SPEAKING INDICATOR */}
             <div
               className={`mt-4 flex items-center gap-2 px-3 py-1 rounded-full bg-card border border-border ${
                 isSpeaking ? "border-primary" : ""
@@ -182,7 +198,10 @@ const VapiWidget = () => {
           </div>
         </Card>
 
-        <Card className={`bg-card/90 backdrop-blur-sm border overflow-hidden relative`}>
+        {/* USER CARD */}
+        <Card
+          className={`bg-card/90 backdrop-blur-sm border overflow-hidden relative`}
+        >
           <div className="aspect-video flex flex-col items-center justify-center p-6 relative">
             {/* User Image */}
             <div className="relative size-32 mb-4">
@@ -197,19 +216,85 @@ const VapiWidget = () => {
 
             <h2 className="text-xl font-bold text-foreground">You</h2>
             <p className="text-sm text-muted-foreground mt-1">
-              {user ? (user.firstName + " " + (user.lastName || "")).trim() : "Guest"}
+              {user
+                ? (user.firstName + " " + (user.lastName || "")).trim()
+                : "Guest"}
             </p>
 
             {/* User Ready Text */}
-            <div className={`mt-4 flex items-center gap-2 px-3 py-1 rounded-full bg-card border`}>
+            <div
+              className={`mt-4 flex items-center gap-2 px-3 py-1 rounded-full bg-card border`}
+            >
               <div className={`w-2 h-2 rounded-full bg-muted`} />
               <span className="text-xs text-muted-foreground">Ready</span>
             </div>
           </div>
         </Card>
       </div>
+
+      {/* MESSAGE CONTAINER */}
+      {messages.length > 0 && (
+        <div
+          ref={messageContainerRef}
+          className="w-full bg-card/90 backdrop-blur-sm border border-border rounded-xl p-4 mb-8 h-64 overflow-y-auto transition-all duration-300 scroll-smooth"
+        >
+          <div className="space-y-3">
+            {messages.map((msg, index) => (
+              <div
+                key={index}
+                className="message-item animate-in fade-in duration-300"
+              >
+                <div className="font-semibold text-xs text-muted-foreground mb-1">
+                  {msg.role === "assistant" ? "DentWise AI" : "You"}:
+                </div>
+                <p className="text-foreground">{msg.content}</p>
+              </div>
+            ))}
+
+            {callEnded && (
+              <div className="message-item animate-in fade-in duration-300">
+                <div className="font-semibold text-xs text-primary mb-1">
+                  System:
+                </div>
+                <p className="text-foreground">
+                  Call ended. Thank you for using DentWise AI!
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* CALL CONTROLS */}
+      <div className="w-full flex justify-center gap-4">
+        <Button
+          className={`w-44 text-xl rounded-3xl ${
+            callActive
+              ? "bg-destructive hover:bg-destructive/90"
+              : callEnded
+                ? "bg-red-500 hover:bg-red-700"
+                : "bg-primary hover:bg-primary/90"
+          } text-white relative`}
+          onClick={toggleCall}
+          disabled={connecting || callEnded}
+        >
+          {connecting && (
+            <span className="absolute inset-0 rounded-full animate-ping bg-primary/50 opacity-75"></span>
+          )}
+
+          <span>
+            {callActive
+              ? "End Call"
+              : connecting
+                ? "Connecting..."
+                : callEnded
+                  ? "Call Ended"
+                  : "Start Call"}
+          </span>
+        </Button>
+      </div>
     </div>
   );
-};
+}
 
 export default VapiWidget;
