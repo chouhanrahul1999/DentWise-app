@@ -1,25 +1,27 @@
-import { getUserAppointmets } from '@/lib/actions/appointments'
-import { format, isAfter, isSameDay, parseISO } from 'date-fns';
+import { getUserAppointmets } from "@/lib/actions/appointments";
+import { format, isAfter, isSameDay, parseISO } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { CalendarIcon, ClockIcon, UserIcon } from "lucide-react";
-import React from 'react'
+import React from "react";
+import NoNextAppointments from "./NoNextAppointments;";
 
 const NextAppointment = async () => {
-    const appointments = await getUserAppointmets();
+  const appointments = await getUserAppointmets();
 
-    const upcomingAppointments =
+  const upcomingAppointments =
     appointments?.filter((appointment) => {
       const appointmentDate = parseISO(appointment.date);
       const today = new Date();
-      const isUpcoming = isSameDay(appointmentDate, today) || isAfter(appointmentDate, today);
+      const isUpcoming =
+        isSameDay(appointmentDate, today) || isAfter(appointmentDate, today);
       return isUpcoming && appointment.status === "CONFIRMED";
     }) || [];
 
-    const nextAppointment = upcomingAppointments[0];
+  const nextAppointment = upcomingAppointments[0];
 
-    if(!nextAppointment) return null;
+  if (!nextAppointment) return <NoNextAppointments />;
 
-    const appointmentDate = parseISO(nextAppointment.date);
+  const appointmentDate = parseISO(nextAppointment.date);
   const formattedDate = format(appointmentDate, "EEEE, MMMM d, yyyy");
   const isToday = isSameDay(appointmentDate, new Date());
   return (
@@ -51,8 +53,12 @@ const NextAppointment = async () => {
               <UserIcon className="size-4 text-primary" />
             </div>
             <div>
-              <p className="font-medium text-sm">{nextAppointment.doctorName}</p>
-              <p className="text-xs text-muted-foreground">{nextAppointment.reason}</p>
+              <p className="font-medium text-sm">
+                {nextAppointment.doctorName}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {nextAppointment.reason}
+              </p>
             </div>
           </div>
 
@@ -88,7 +94,7 @@ const NextAppointment = async () => {
         )}
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
-export default NextAppointment
+export default NextAppointment;
