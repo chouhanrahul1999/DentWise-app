@@ -1,6 +1,6 @@
 "use client";
 
-import getDoctors, { createDoctor, updateDoctor } from "@/lib/actions/doctors";
+import getDoctors, { createDoctor, getAvailableDoctors, updateDoctor } from "@/lib/actions/doctors";
 import {
   QueryClient,
   useMutation,
@@ -43,4 +43,13 @@ export const useUpdateDoctor = () => {
 
   return result;
 };
+
+export const useAvailableDoctors = () => {
+  const result = useQuery({
+    queryKey: ["getAvailableDoctors"],
+    queryFn: getAvailableDoctors,
+  })
+
+  return result;
+}
 
