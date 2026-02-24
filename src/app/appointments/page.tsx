@@ -1,10 +1,10 @@
-"use client"
+"use client";
 import DoctorSelectionStep from "@/components/appointments/DoctorSelectionStep";
 import ProgressSteps from "@/components/appointments/ProgressSteps";
+import TimeSelectionStep from "@/components/appointments/TimeSelectionStep";
 import Navbar from "@/components/Navbar";
 import { se } from "date-fns/locale";
 import { useState } from "react";
-
 
 const Appointments = () => {
   const [selectedDentistId, setSelectedDentistId] = useState<string | null>(
@@ -22,8 +22,6 @@ const Appointments = () => {
     setSelectedDate("");
     setSelectedTime("");
     setSelectedType("");
-
-
   };
 
   const handleBookAppointment = async () => {};
@@ -33,20 +31,35 @@ const Appointments = () => {
       <Navbar />
 
       <div className="max-w-7xl mx-auto px-6 py-8 pt-24">
-
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Book an Appointment</h1>
-          <p className="text-muted-foreground">Find and book with verified dentists in your area</p>
+          <p className="text-muted-foreground">
+            Find and book with verified dentists in your area
+          </p>
         </div>
 
         <ProgressSteps currentStep={currentStep} />
 
         {currentStep === 1 && (
-            <DoctorSelectionStep
-             selectedDentistId={selectedDentistId}
-             onContinue={() => setCurrentStep(2)}
-             onSelectDentist={handleSelectedDentist}
-             />
+          <DoctorSelectionStep
+            selectedDentistId={selectedDentistId}
+            onContinue={() => setCurrentStep(2)}
+            onSelectDentist={handleSelectedDentist}
+          />
+        )}
+
+        {currentStep === 2 && selectedDentistId && (
+          <TimeSelectionStep
+            selectedDentistId={selectedDentistId}
+            selectedDate={selectedDate}
+            selectedTime={selectedTime}
+            selectedType={selectedType}
+            onBack={() => setCurrentStep(1)}
+            onContinue={() => setCurrentStep(3)}
+            onDateChange={setSelectedDate}
+            onTimeChange={setSelectedTime}
+            onTypeChange={setSelectedType}
+          />
         )}
       </div>
     </>

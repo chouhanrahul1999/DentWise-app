@@ -2,6 +2,7 @@
 
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "../prisma";
+import { AppointmentStatus } from "@prisma/client";
 
 function transformAppointment(appointment: any) {
   return {
@@ -96,3 +97,23 @@ export const getUserAppointmentStats = async () => {
     return { totalAppointments: 0, completedAppointments: 0 };
   }
 };
+
+export async function getBookedTimeSlots(doctorId: string, date: string) {
+  try {
+    const appointments = await prisma.appointment.findMany({
+      where: {
+        doctorId,
+        date: new Date(date),
+        status: {
+          in: ["CONFIRMED", "COMPLETED"], // consider both confirmed and completed appointments as blocking
+        },
+      },
+      select: { time: true },
+    });
+
+    return appointments.map((appointment) => appointment.time);
+  } catch (error) {
+    console.error("Error fetching booked time slots:", error);
+    return []; // return empty array if there's an error
+  }
+}
