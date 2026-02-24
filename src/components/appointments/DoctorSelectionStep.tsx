@@ -4,6 +4,7 @@ import Image from "next/image";
 import { MapPinIcon, PhoneIcon, StarIcon } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
+import { DoctorCardsLoading } from "./DoctorCardsLoading";
 
 
 interface DoctorSelectionStepProps {
@@ -23,8 +24,8 @@ function DoctorSelectionStep({
     return (
       <div className="space-y-6">
         <h2 className="text-2xl font-semibold">Choose Your Dentist</h2>
-        {/* <DoctorCardsLoading /> */}
-        Loading...
+        <DoctorCardsLoading />
+
       </div>
     );
 
