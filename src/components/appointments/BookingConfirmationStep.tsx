@@ -84,7 +84,15 @@ const BookingConfirmationStep = ({
         </CardContent>
       </Card>
 
-     
+      {/* action buttons */}
+      <div className="flex gap-4">
+        <Button variant="outline" onClick={onModify}>
+          Modify Appointment
+        </Button>
+        <Button onClick={onConfirm} className="bg-primary" disabled={isBooking}>
+          {isBooking ? "Booking..." : "Confirm Booking"}
+        </Button>
+      </div>
     </div>
   )
 };

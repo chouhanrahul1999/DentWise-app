@@ -5,8 +5,11 @@ import ProgressSteps from "@/components/appointments/ProgressSteps";
 import TimeSelectionStep from "@/components/appointments/TimeSelectionStep";
 import Navbar from "@/components/Navbar";
 import { useBookAppointment } from "@/hooks/use-appointments";
+import { APPOINTMENT_TYPES } from "@/lib/utils";
+import { format } from "date-fns";
 import { se } from "date-fns/locale";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const Appointments = () => {
   const [selectedDentistId, setSelectedDentistId] = useState<string | null>(
@@ -28,7 +31,62 @@ const Appointments = () => {
     setSelectedType("");
   };
 
-  const handleBookAppointment = async () => {};
+  const handleBookAppointment = async () => {
+    if (!selectedDentistId || !selectedDate || !selectedTime) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+     const appointmentType = APPOINTMENT_TYPES.find((t) => t.id === selectedType);
+
+    bookedAppointmentMutation.mutate(
+      {
+        doctorId: selectedDentistId,
+        date: selectedDate,
+        time: selectedTime,
+        reason: appointmentType?.name,
+      },
+      {
+        onSuccess: async (appointment) => {
+          // store the appointment details to show in the modal
+          setBookedAppointment(appointment);
+
+          try {
+            const emailResponse = await fetch("/api/send-appointment-email", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                userEmail: appointment.patientEmail,
+                doctorName: appointment.doctorName,
+                appointmentDate: format(new Date(appointment.date), "EEEE, MMMM d, yyyy"),
+                appointmentTime: appointment.time,
+                appointmentType: appointmentType?.name,
+                duration: appointmentType?.duration,
+                price: appointmentType?.price,
+              }),
+            });
+
+            if (!emailResponse.ok) console.error("Failed to send confirmation email");
+          } catch (error) {
+            console.error("Error sending confirmation email:", error);
+          }
+
+          // show the success modal
+          setShowConfirmationModal(true);
+
+          // reset form
+          setSelectedDentistId(null);
+          setSelectedDate("");
+          setSelectedTime("");
+          setSelectedType("");
+          setCurrentStep(1);
+        },
+        onError: (error) => toast.error(`Failed to book appointment: ${error.message}`),
+      }
+    );
+  };
 
   return (
     <>
