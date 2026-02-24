@@ -1,8 +1,12 @@
 import { useBookedTimeSlots } from "@/hooks/use-appointments";
-import { APPOINTMENT_TYPES, getAvailableTimeSlots, getNext5Days } from "@/lib/utils";
+import {
+  APPOINTMENT_TYPES,
+  getAvailableTimeSlots,
+  getNext5Days,
+} from "@/lib/utils";
 import React from "react";
 import { Button } from "../ui/button";
-import { ChevronLeftIcon } from "lucide-react";
+import { ChevronLeftIcon, ClockIcon } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 
 interface TimeSelectionStepProps {
@@ -41,8 +45,9 @@ const TimeSelectionStep = ({
     // reset time when the date changes
     onTimeChange("");
   };
-  return <div className="space-y-6">
-    <div className="flex items-center gap-4 mb-6">
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center gap-4 mb-6">
         <Button variant="ghost" onClick={onBack}>
           <ChevronLeftIcon className="w-4 h-4 mr-2" />
           Back
@@ -67,17 +72,80 @@ const TimeSelectionStep = ({
                   <div className="flex justify-between items-center">
                     <div>
                       <h4 className="font-medium">{type.name}</h4>
-                      <p className="text-sm text-muted-foreground">{type.duration}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {type.duration}
+                      </p>
                     </div>
-                    <span className="font-semibold text-primary">{type.price}</span>
+                    <span className="font-semibold text-primary">
+                      {type.price}
+                    </span>
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium">Available Dates</h3>
+
+          <div className="grid grid-cols-2 gap-3">
+            {availableDates.map((date) => (
+              <Button
+                key={date}
+                variant={selectedDate === date ? "default" : "outline"}
+                onClick={() => handleDateSelect(date)}
+                className="h-auto p-3"
+              >
+                <div className="text-center">
+                  <div className="font-medium">
+                    {new Date(date).toLocaleDateString("en-US", {
+                      weekday: "short",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </div>
+                </div>
+              </Button>
+            ))}
           </div>
+
+          {selectedDate && (
+            <div className="space-y-3">
+              <h4 className="font-medium">Available Times</h4>
+              <div className="grid grid-cols-3 gap-2">
+                {availableTimeSlots.map((time) => {
+                  const isBooked = bookedTimeSlots.includes(time);
+                  return (
+                    <Button
+                      key={time}
+                      variant={selectedTime === time ? "default" : "outline"}
+                      onClick={() => !isBooked && onTimeChange(time)}
+                      size="sm"
+                      disabled={isBooked}
+                      className={
+                        isBooked ? "opacity-50 cursor-not-allowed" : ""
+                      }
+                    >
+                      <ClockIcon className="w-3 h-3 mr-1" />
+                      {time}
+                      {isBooked && " (Booked)"}
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-  </div>;
+
+      {selectedType && selectedDate && selectedTime && (
+        <div className="flex justify-end">
+          <Button onClick={onContinue}>Review Booking</Button>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default TimeSelectionStep;
