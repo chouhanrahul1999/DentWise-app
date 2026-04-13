@@ -37,6 +37,7 @@ export const useUpdateDoctor = () => {
     mutationFn: updateDoctor,
     onSuccess: () => {
       queryClien.invalidateQueries({ queryKey: ["getDoctors"] });
+      queryClien.invalidateQueries({ queryKey: ["getAvailableDoctors"] });
     },
     onError: (error) => console.error("Error update doctor:", error),
   });
